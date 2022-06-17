@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLID, GraphQLString,} = graphql;
+const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } = graphql;
 
 const UserType = require('./types/UserType');
 const RoleType = require('./types/RoleType');
@@ -13,11 +13,11 @@ const mutation = new GraphQLObjectType({
     addUser: {
       type: UserType,
       args: {
-        firstName: { type: GraphQLString },
-        lastName: { type: GraphQLString },
-        name: { type: GraphQLString },
-        email: { type: GraphQLString },
-        roleId: { type: GraphQLID },
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        lastName: { type: new GraphQLNonNull(GraphQLString) },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        roleId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(_, { firstName, lastName, name, email, roleId }) {
         const user = new User({ firstName, lastName, name, email, roleId });
@@ -28,7 +28,7 @@ const mutation = new GraphQLObjectType({
     addRole: {
       type: RoleType,
       args: {
-        name: { type: GraphQLString },
+        name: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(_, { name }) {
         const role = new Role({ name });

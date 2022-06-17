@@ -22,7 +22,7 @@ const query = new GraphQLObjectType({
       resolve(_, __) {
         console.log('users');
 
-        return User.find();
+        return User.find({});
       },
     },
     role: {
@@ -35,7 +35,7 @@ const query = new GraphQLObjectType({
     roles: {
       type: new GraphQLList(RoleType),
       resolve(_, __) {
-        return Role.find();
+        return Role.find({});
       },
     },
   }),
