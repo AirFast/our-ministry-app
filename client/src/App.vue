@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { RouterView, RouterLink } from 'vue-router'
-
 import { pages } from '~/pages'
 
 const routs = pages.map(({path, name}) => ({ path, name, isBtn: ['login', 'register'].includes(name as string) }))
-
-console.log(routs);
-
 </script>
 
 <template>
@@ -30,5 +26,5 @@ console.log(routs);
 </template>
 
 <style>
-@import './index.css';
+@import './styles/index.css';
 </style>
