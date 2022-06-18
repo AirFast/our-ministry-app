@@ -3,7 +3,7 @@ import { RouterView, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { pages } from '~/pages'
 
-const { t } = useI18n({ inheritLocale: true, useScope: 'global' })
+const { t } = useI18n()
 const routs = pages.map(({path, name}) => ({ path, name, isBtn: ['login', 'register'].includes(name as string) }))
 </script>
 

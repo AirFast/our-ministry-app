@@ -1,7 +1,12 @@
 <script setup lang="ts">
+import { watch } from 'vue';
 import { useI18n } from 'vue-i18n'
 
-const { locale, t } = useI18n({ inheritLocale: true, useScope: 'global' })
+const { locale, t } = useI18n()
+
+watch(locale, (locale) => {
+  document.documentElement.setAttribute('lang', locale)
+})
 </script>
 
 <template>
