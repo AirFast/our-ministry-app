@@ -20,8 +20,6 @@ const query = new GraphQLObjectType({
     users: {
       type: new GraphQLList(UserType),
       resolve(_, __) {
-        console.log('users');
-
         return User.find({});
       },
     },
