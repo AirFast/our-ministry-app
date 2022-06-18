@@ -1,3 +1,6 @@
 export const en = {
-  hello: 'Hello!'
+  hello: 'Hello!',
+  home: 'Home',
+  login: 'Login',
+  register: 'Register',
 }
