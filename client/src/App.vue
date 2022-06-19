@@ -4,7 +4,7 @@ import { RouterView, RouterLink } from 'vue-router'
 import { TranslateIcon, MoonIcon, SunIcon } from '@heroicons/vue/solid'
 import { useI18n } from 'vue-i18n'
 import { pages } from '~/pages'
-import { useTheme } from '~/composables'
+import { useTheme, useUserStorage } from '~/composables'
 
 const { locale, t, availableLocales } = useI18n()
 
@@ -13,13 +13,15 @@ const routs = pages.map(({ path, name }) => ({
   })
 )
 
+const userStorage = useUserStorage()
+const { isDark, toggleDark } = useTheme()
+
 const toggleLang = () => {
   locale.value = availableLocales[
-    availableLocales.indexOf(locale.value)  + 1 === availableLocales.length ? 0 : availableLocales.indexOf(locale.value) + 1
+    availableLocales.indexOf(locale.value) + 1 === availableLocales.length ? 0 : availableLocales.indexOf(locale.value) + 1
   ]
+  userStorage.value.lang = locale.value
 }
-
-const { isDark, toggleDark } = useTheme()
 
 watch(
   locale,
@@ -40,7 +42,7 @@ watch(
       </ul>
     </nav>
   </header>
-  <main>
+  <main class="h-[calc(100vh-180px)] min-h-[500px]">
     <slot>
       <RouterView />
     </slot>
