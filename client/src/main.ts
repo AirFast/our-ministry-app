@@ -7,8 +7,8 @@ import { router } from '~/router'
 import { i18n } from './i18n'
 
 const apolloClient = new ApolloClient({
-  cache: new InMemoryCache(),
   uri: 'http://localhost:4000/graphql',
+  cache: new InMemoryCache(),
 })
 
 const app = createApp({

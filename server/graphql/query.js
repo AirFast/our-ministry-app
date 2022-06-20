@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLList, GraphQLID } = graphql;
+const { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString } = graphql;
 
 const UserType = require('./types/UserType');
 const RoleType = require('./types/RoleType');
@@ -10,6 +10,13 @@ const Role = require('../models/role');
 const query = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
+    login: {
+      type: UserType,
+      args: { email: { type: GraphQLString } },
+      resolve(_, { email }) {
+        return User.findOne({ email });
+      },
+    },
     user: {
       type: UserType,
       args: { id: { type: GraphQLID } },
