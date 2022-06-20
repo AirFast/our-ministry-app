@@ -37,26 +37,26 @@ watch(
     <nav>
       <ul class="-mx-4 text-right" :class="{'-mr-2': routs[routs.length - 1].isBtn}">
         <li v-for="{path, name, isBtn} in routs" class="inline-block">
-          <RouterLink :to="path" class="text-sm font-medium block px-4 transition-colors duration-200 ease-out dark:text-white" :class="[{'link-button': isBtn}, {'hover:text-indigo-500': !isBtn}]">{{ t(name as string) }}</RouterLink>
+          <RouterLink :to="path" class="text-sm font-medium block px-4 transition-all duration-200 ease-out dark:text-white" :class="[{'link-button': isBtn}, {'hover:text-indigo-500': !isBtn}]">{{ t(name as string) }}</RouterLink>
         </li>
       </ul>
     </nav>
   </header>
-  <main class="h-[calc(100vh-180px)] min-h-[500px]">
+  <main class="h-[calc(100vh-200px)] min-h-[500px]">
     <slot>
       <RouterView />
     </slot>
   </main>
   <footer class="flex justify-between items-center py-6">
-    <p class="text-xs">All rights reserved 2022 © Our Ministry</p>
+    <p class="text-xs text-slate-500">All rights reserved 2022 © Our Ministry</p>
     <div class="flex items-center">
-      <p class="text-xs font-medium text-indigo-500 mr-4">{{ t(locale) }}</p>
-      <button @click="toggleLang()" type="button" class="w-12 h-12 mr-4 rounded-full ring-1 ring-indigo-500/5 shadow-md flex items-center justify-center">
-        <TranslateIcon class="w-6 h-6 text-indigo-500"/>
+      <p class="text-xs font-medium text-indigo-500 mr-4 dark:text-indigo-200">{{ t(locale) }}</p>
+      <button @click="toggleLang()" type="button" class="w-12 h-12 mr-4 rounded-full ring-1 ring-indigo-500/5 shadow-md flex items-center justify-center dark:bg-slate-800">
+        <TranslateIcon class="w-6 h-6 text-indigo-500 dark:text-indigo-200"/>
       </button>
-      <button @click="toggleDark()"  type="button" class="w-12 h-12 rounded-full ring-1 ring-indigo-500/5 shadow-md flex items-center justify-center">
-        <MoonIcon v-if="!isDark" class="w-6 h-6 text-indigo-500"/>
-        <SunIcon v-else class="w-6 h-6 text-indigo-500"/>
+      <button @click="toggleDark()" type="button" class="w-12 h-12 rounded-full ring-1 ring-indigo-500/5 shadow-md flex items-center justify-center dark:bg-slate-800">
+        <MoonIcon v-if="!isDark" class="w-6 h-6 text-indigo-500 dark:text-indigo-200"/>
+        <SunIcon v-else class="w-6 h-6 text-indigo-500 dark:text-indigo-200"/>
       </button>
     </div>
   </footer>
