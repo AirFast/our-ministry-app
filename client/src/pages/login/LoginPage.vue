@@ -1,46 +1,55 @@
 <script setup lang="ts">
+import { reactive, ref } from 'vue'
+
 import gql from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable'
-import { reactive } from 'vue'
+import { useLazyQuery } from '@vue/apollo-composable'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-const LOGIN_QUERY = gql`
-  query login ($email: String!) {
-    login(email: $email) {
-      name
-    }
-  } 
-`
+import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
-const { t } = useI18n()
 const formLogin = reactive({
-  email: 'airfast.88@gmail.com',
+  email: '',
   password: ''
 })
 
-const { result, error } = useQuery(LOGIN_QUERY, formLogin)
+const LOGIN_QUERY = gql`
+  query Login ($email: String!) {
+    login(email: $email) {
+      email
+      password
+    }
+  } 
+`
+const { result, load, onResult } = useLazyQuery(LOGIN_QUERY, () => ({ email: formLogin.email }))
 
-console.log(result);
+const { t } = useI18n()
+
 
 const formLoginSubmit = () => {
 
-  const { result, error } = useQuery(LOGIN_QUERY, formLogin)
-  console.log(result);
+  load()
+  console.log(result.value)
   // console.log(formLogin);
   
 }
+
+const isPassVisible = ref(false)
 </script>
 
 <template>
-  <div class="flex justify-center py-52">
-    <form @submit.prevent="formLoginSubmit()" name="login" class="w-full max-w-md px-12 pt-8 pb-10 rounded-md ring-1 ring-indigo-500/5 shadow-md bg-slate-50 dark:bg-slate-800">
+  <div class="h-full flex justify-center items-center">
+    <form @submit.prevent="formLoginSubmit" name="login" class="w-full max-w-md px-12 pt-8 pb-10 rounded-md ring-1 ring-indigo-500/5 shadow-md bg-slate-50 dark:bg-slate-800">
       <h1 class="text-xl font-medium tracking-tight text-center mb-7">{{ t('login') }}</h1>
       <div class="mb-6 last-of-type:mb-0">
         <input v-model="formLogin.email" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" type="email" placeholder="Email" />
       </div>
-      <div class="mb-6 last-of-type:mb-0">
-        <input v-model="formLogin.password" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" type="password" placeholder="Password" />
+      <div class="mb-6 relative last-of-type:mb-0">
+        <input v-model="formLogin.password" ref="passRef" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" :type="isPassVisible ? 'password' : 'text'" placeholder="Password" />
+        <span @click="isPassVisible = !isPassVisible" class="absolute top-0 right-0 h-full cursor-pointer flex items-center px-4 duration-200 text-slate-300 hover:text-slate-400">
+          <EyeIcon v-if="isPassVisible" class="w-6 h-6" />
+          <EyeOffIcon v-else class="w-6 h-6" />
+        </span>
       </div>
       <div class="flex justify-center mt-10">
         <button type="submit" class="font-medium uppercase text-sm tracking-wide w-full px-10 py-4 rounded bg-indigo-500 text-white duration-200 ease-out hover:bg-indigo-50 hover:text-indigo-500 dark:hover:bg-slate-700 dark:hover:text-white">{{ t('login') }}</button>
