@@ -8,6 +8,9 @@ import { useI18n } from 'vue-i18n'
 
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
+const isPassVisible = ref(false)
+const isEnabled = ref(true)
+
 const formLogin = reactive({
   email: '',
   password: ''
@@ -22,26 +25,24 @@ const LOGIN_QUERY = gql`
     }
   } 
 `
-const { result, load, onResult, loading } = useLazyQuery(LOGIN_QUERY, () => formLogin, { fetchPolicy: 'cache-first' })
+const { result, load, onResult, loading } = useLazyQuery(LOGIN_QUERY, formLogin, { fetchPolicy: 'cache-first' })
 
 const { t } = useI18n()
-
 
 const formLoginSubmit = () => {
   load()
   onResult(() => {
     console.log(result.value);
   })
+
   console.log(loading);
 }
-
-const isPassVisible = ref(false)
 </script>
 
 <template>
   <div class="h-full flex justify-center items-center">
     <form @submit.prevent="formLoginSubmit()" name="login" class="w-full max-w-md px-12 pt-8 pb-10 rounded-md ring-1 ring-indigo-500/5 shadow-md bg-slate-50 dark:bg-slate-800">
-      <h1 class="text-xl font-medium tracking-tight text-center mb-7">{{ t('login') }} {{ result }}</h1>
+      <h1 class="text-xl font-medium tracking-tight text-center mb-7">{{ t('login') }}</h1>
       <div class="mb-7 last-of-type:mb-0">
         <input v-model="formLogin.email" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" type="email" placeholder="email" />
       </div>

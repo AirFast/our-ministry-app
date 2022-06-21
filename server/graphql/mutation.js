@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } = graphql;
 
+const LoginType = require('./types/LoginType');
 const UserType = require('./types/UserType');
 const RoleType = require('./types/RoleType');
 
@@ -10,6 +11,32 @@ const Role = require('../models/role');
 const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
+    login: {
+      type: LoginType,
+      args: {
+        email: { type: GraphQLString },
+        password: { type: GraphQLString }
+      },
+      async resolve(_, { email, password }) {
+        const user = await User.findOne({ email });
+        if (!user) {
+          return {
+            isAuth: false,
+            error: { path: 'email', message: 'Wrong email!'}
+          }
+        }
+
+        const isAuth = await user.comparePassword(password);
+        if (!isAuth) {
+          return {
+            isAuth,
+            error: { path: 'password', message: 'Wrong password!'}
+          }
+        }
+
+        return { isAuth, token: '2345678' }
+      },
+    },
     addUser: {
       type: UserType,
       args: {
@@ -22,8 +49,6 @@ const mutation = new GraphQLObjectType({
       },
       resolve(_, { firstName, lastName, name, email, password, roleId }) {
         const user = new User({ firstName, lastName, name, email, password, roleId });
-
-        console.log(user);
 
         return user.save();
       },
