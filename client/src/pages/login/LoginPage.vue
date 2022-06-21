@@ -14,24 +14,25 @@ const formLogin = reactive({
 })
 
 const LOGIN_QUERY = gql`
-  query Login ($email: String!) {
-    login(email: $email) {
+  query Login ($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      name
       email
       password
     }
   } 
 `
-const { result, load, onResult } = useLazyQuery(LOGIN_QUERY, () => ({ email: formLogin.email }))
+const { result, load, onResult, loading } = useLazyQuery(LOGIN_QUERY, () => formLogin, { fetchPolicy: 'cache-first' })
 
 const { t } = useI18n()
 
 
 const formLoginSubmit = () => {
-
   load()
-  console.log(result.value)
-  // console.log(formLogin);
-  
+  onResult(() => {
+    console.log(result.value);
+  })
+  console.log(loading);
 }
 
 const isPassVisible = ref(false)
@@ -39,15 +40,15 @@ const isPassVisible = ref(false)
 
 <template>
   <div class="h-full flex justify-center items-center">
-    <form @submit.prevent="formLoginSubmit" name="login" class="w-full max-w-md px-12 pt-8 pb-10 rounded-md ring-1 ring-indigo-500/5 shadow-md bg-slate-50 dark:bg-slate-800">
-      <h1 class="text-xl font-medium tracking-tight text-center mb-7">{{ t('login') }}</h1>
-      <div class="mb-6 last-of-type:mb-0">
+    <form @submit.prevent="formLoginSubmit()" name="login" class="w-full max-w-md px-12 pt-8 pb-10 rounded-md ring-1 ring-indigo-500/5 shadow-md bg-slate-50 dark:bg-slate-800">
+      <h1 class="text-xl font-medium tracking-tight text-center mb-7">{{ t('login') }} {{ result }}</h1>
+      <div class="mb-7 last-of-type:mb-0">
         <input v-model="formLogin.email" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" type="email" placeholder="email" />
       </div>
-      <div class="mb-6 relative last-of-type:mb-0">
-        <input v-model="formLogin.password" :type="isPassVisible ? 'password' : 'text'" placeholder="password" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" :class="{'pr-14': true}" />
+      <div class="mb-7 relative last-of-type:mb-0">
+        <input v-model="formLogin.password" :type="!isPassVisible ? 'password' : 'text'" placeholder="password" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" :class="{'pr-14': true}" />
         <span @click="isPassVisible = !isPassVisible" class="absolute top-0 right-0 h-full cursor-pointer flex items-center px-4 duration-200 text-slate-400 hover:text-slate-300">
-          <EyeIcon v-if="isPassVisible" class="w-6 h-6" />
+          <EyeIcon v-if="!isPassVisible" class="w-6 h-6" />
           <EyeOffIcon v-else class="w-6 h-6" />
         </span>
       </div>

@@ -12,9 +12,15 @@ const query = new GraphQLObjectType({
   fields: () => ({
     login: {
       type: UserType,
-      args: { email: { type: GraphQLString } },
-      resolve(_, { email }) {
-        return User.findOne({ email });
+      args: {
+        email: { type: GraphQLString },
+        password: { type: GraphQLString }
+      },
+      async resolve(_, { email, password }) {
+        const user = await User.findOne({ email });
+        const isAuth = await user.comparePassword(password);
+
+        if (isAuth) return user
       },
     },
     user: {
