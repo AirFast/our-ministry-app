@@ -10,19 +10,6 @@ const Role = require('../models/role');
 const query = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
-    login: {
-      type: UserType,
-      args: {
-        email: { type: GraphQLString },
-        password: { type: GraphQLString }
-      },
-      async resolve(_, { email, password }) {
-        const user = await User.findOne({ email });
-        const isAuth = await user.comparePassword(password);
-
-        if (isAuth) return user
-      },
-    },
     user: {
       type: UserType,
       args: { id: { type: GraphQLID } },

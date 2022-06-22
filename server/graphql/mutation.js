@@ -26,6 +26,8 @@ const mutation = new GraphQLObjectType({
           }
         }
 
+        console.log(user);
+
         const isAuth = await user.comparePassword(password);
         if (!isAuth) {
           return {
@@ -34,7 +36,7 @@ const mutation = new GraphQLObjectType({
           }
         }
 
-        return { isAuth, token: '2345678' }
+        return { isAuth, token: '2345678', user }
       },
     },
     addUser: {
