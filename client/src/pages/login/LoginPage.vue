@@ -2,11 +2,12 @@
 import { reactive, ref } from 'vue'
 
 import gql from 'graphql-tag'
-import { useLazyQuery, useMutation } from '@vue/apollo-composable'
+import { useMutation } from '@vue/apollo-composable'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
+import { FetchResult } from '@apollo/client/core'
 
 const isPassVisible = ref(false)
 const formLogin = reactive({
@@ -14,7 +15,7 @@ const formLogin = reactive({
   password: ''
 })
 
-const LOGIN_QUERY = gql`
+const LOGIN_MUTATION = gql`
   mutation Login ($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       isAuth
@@ -22,6 +23,9 @@ const LOGIN_QUERY = gql`
       user {
         id
         username
+        role {
+          name
+        }
       }
       error {
         path
@@ -30,13 +34,13 @@ const LOGIN_QUERY = gql`
     }
   } 
 `
-const { loading, mutate } = useMutation(LOGIN_QUERY, formLogin )
+const { loading, mutate } = useMutation(LOGIN_MUTATION)
 
 const { t } = useI18n()
 
-const formLoginSubmit = () => {
-  
-  console.log(loading);
+const formLoginSubmit = async () => {
+  const { data } = await mutate(formLogin)
+  console.log(loading, data);
 }
 </script>
 
