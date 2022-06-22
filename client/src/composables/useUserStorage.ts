@@ -4,9 +4,9 @@ export const useUserStorage = () => {
   const user = useStorage('user', {
     id: '',
     username: '',
+    role: '',
     token: '',
     isAuth: false,
-    role: '',
     lang: 'uk'
   })
 

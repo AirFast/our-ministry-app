@@ -15,5 +15,5 @@ export const pages: RouteRecordRaw[] = [
     path: '/register',
     name: 'register',
     component: () => import('./register'),
-  },
+  }
 ]
