@@ -2,39 +2,40 @@
 import { reactive, ref } from 'vue'
 
 import gql from 'graphql-tag'
-import { useLazyQuery } from '@vue/apollo-composable'
+import { useLazyQuery, useMutation } from '@vue/apollo-composable'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 const isPassVisible = ref(false)
-const isEnabled = ref(true)
-
 const formLogin = reactive({
   email: '',
   password: ''
 })
 
 const LOGIN_QUERY = gql`
-  query Login ($email: String!, $password: String!) {
+  mutation Login ($email: String!, $password: String!) {
     login(email: $email, password: $password) {
-      name
-      email
-      password
+      isAuth
+      token
+      user {
+        id
+        username
+      }
+      error {
+        path
+        message
+      }
     }
   } 
 `
-const { result, load, onResult, loading } = useLazyQuery(LOGIN_QUERY, formLogin, { fetchPolicy: 'cache-first' })
+const { loading, mutate } = useMutation(LOGIN_QUERY, formLogin )
 
 const { t } = useI18n()
 
 const formLoginSubmit = () => {
-  load()
-  onResult(() => {
-    console.log(result.value);
-  })
-
+  
   console.log(loading);
 }
 </script>
@@ -57,6 +58,6 @@ const formLoginSubmit = () => {
         <button type="submit" class="font-medium uppercase text-sm tracking-wide w-full px-10 py-4 rounded bg-indigo-500 text-white duration-200 ease-out hover:bg-indigo-50 hover:text-indigo-500 dark:hover:bg-slate-700 dark:hover:text-white">{{ t('login') }}</button>
       </div>
       <p class="text-sm mt-8">Якщо у вас ще немає облікового запису, перейдіть на сторінку реєстрації за цим <RouterLink to="/register">посиланням</RouterLink>.</p>
-    </form>  
+    </form>
   </div>
 </template>

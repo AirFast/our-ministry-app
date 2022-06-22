@@ -26,8 +26,6 @@ const mutation = new GraphQLObjectType({
           }
         }
 
-        console.log(user);
-
         const isAuth = await user.comparePassword(password);
         if (!isAuth) {
           return {
