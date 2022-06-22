@@ -36,3 +36,11 @@ p a {
   dark:text-indigo-200 dark:border-transparent
   dark:bg-slate-500
 }
+
+.error-fade-enter-active {
+  @apply translate-y-2 opacity-0
+}
+
+.error-fade-leave-active {
+  @apply translate-y-2 opacity-0
+}

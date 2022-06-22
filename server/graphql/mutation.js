@@ -18,7 +18,7 @@ const mutation = new GraphQLObjectType({
         password: { type: GraphQLString }
       },
       async resolve(_, { email, password }) {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
           return {
             isAuth: false,
@@ -48,7 +48,7 @@ const mutation = new GraphQLObjectType({
         roleId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(_, { firstName, lastName, username, email, password, roleId }) {
-        const user = new User({ firstName, lastName, username, email, password, roleId });
+        const user = new User({ firstName, lastName, username, email: email.toLowerCase(), password, roleId });
 
         return user.save();
       },

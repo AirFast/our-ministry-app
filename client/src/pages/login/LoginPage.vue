@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { ref, reactive, watch } from 'vue'
 
 import gql from 'graphql-tag'
 import { useMutation } from '@vue/apollo-composable'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useUserStorage } from '~/composables/useUserStorage'
 
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
-import { FetchResult } from '@apollo/client/core'
 
 const isPassVisible = ref(false)
+const error = ref('')
 const formLogin = reactive({
   email: '',
   password: ''
 })
+
+const { push } = useRouter()
+const { t } = useI18n()
 
 const LOGIN_MUTATION = gql`
   mutation Login ($email: String!, $password: String!) {
@@ -34,25 +38,55 @@ const LOGIN_MUTATION = gql`
     }
   } 
 `
-const { loading, mutate } = useMutation(LOGIN_MUTATION)
-
-const { t } = useI18n()
+const { mutate } = useMutation(LOGIN_MUTATION)
 
 const formLoginSubmit = async () => {
-  const { data } = await mutate(formLogin)
-  console.log(loading, data);
+  if(formLogin.email === '' || formLogin.password === '') {
+    error.value = 'empty'
+    return
+  }
+
+  if(formLogin.password.length < 8) {
+    error.value = 'length'
+    return
+  }
+
+  const { data: { login } } = await mutate(formLogin)
+  const userStorage = useUserStorage()
+
+  if(login.isAuth) {
+    userStorage.value.id = login.user.id
+    userStorage.value.username = login.user.username
+    userStorage.value.token = login.token
+    userStorage.value.isAuth = login.isAuth
+    userStorage.value.role = login.user.role.name
+
+    formLogin.email = ''
+    formLogin.password = ''
+
+    push({name: 'home'})
+  }
+
+  if(!login.isAuth) {
+    error.value = login.error.path
+  }
 }
+
+watch(formLogin, () => error.value = '')
 </script>
 
 <template>
   <div class="h-full flex justify-center items-center">
-    <form @submit.prevent="formLoginSubmit()" name="login" class="w-full max-w-md px-12 pt-8 pb-10 rounded-md ring-1 ring-indigo-500/5 shadow-md bg-slate-50 dark:bg-slate-800">
+    <form @submit.prevent="formLoginSubmit()" name="login" class="relative w-full max-w-md px-12 pt-8 pb-10 rounded-md ring-1 ring-indigo-500/5 shadow-md bg-slate-50 dark:bg-slate-800">
+      <Transition name="error-fade">
+        <p v-if="error" class="absolute -top-20 left-0 w-full text-sm text-center text-rose-500 px-10 py-4 rounded-md border border-rose-200 duration-100 dark:border-rose-500">{{ t(`validation.${error}`) }}</p>
+      </Transition>
       <h1 class="text-xl font-medium tracking-tight text-center mb-7">{{ t('login') }}</h1>
       <div class="mb-7 last-of-type:mb-0">
-        <input v-model="formLogin.email" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" type="email" placeholder="email" />
+        <input v-model="formLogin.email" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" type="email" :placeholder="t('form.email')" />
       </div>
       <div class="mb-7 relative last-of-type:mb-0">
-        <input v-model="formLogin.password" :type="!isPassVisible ? 'password' : 'text'" placeholder="password" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" :class="{'pr-14': true}" />
+        <input v-model="formLogin.password" :type="!isPassVisible ? 'password' : 'text'" :placeholder="t('form.password')" class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" :class="{'pr-14': true}" />
         <span @click="isPassVisible = !isPassVisible" class="absolute top-0 right-0 h-full cursor-pointer flex items-center px-4 duration-200 text-slate-400 hover:text-slate-300">
           <EyeIcon v-if="!isPassVisible" class="w-6 h-6" />
           <EyeOffIcon v-else class="w-6 h-6" />
