@@ -44,13 +44,13 @@ const mutation = new GraphQLObjectType({
       args: {
         firstName: { type: new GraphQLNonNull(GraphQLString) },
         lastName: { type: new GraphQLNonNull(GraphQLString) },
-        name: { type: new GraphQLNonNull(GraphQLString) },
+        username: { type: new GraphQLNonNull(GraphQLString) },
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
         roleId: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve(_, { firstName, lastName, name, email, password, roleId }) {
-        const user = new User({ firstName, lastName, name, email, password, roleId });
+      resolve(_, { firstName, lastName, username, email, password, roleId }) {
+        const user = new User({ firstName, lastName, username, email, password, roleId });
 
         return user.save();
       },
