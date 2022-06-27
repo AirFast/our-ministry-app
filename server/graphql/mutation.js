@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } = graphql;
-const { signToken } = require('../shared/token');
+const { signTokens } = require('../shared/token');
 
 const AuthType = require('./types/AuthType');
 const UserType = require('./types/UserType');
@@ -18,7 +18,7 @@ const mutation = new GraphQLObjectType({
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) }
       },
-      async resolve(_, { email, password }) {
+      async resolve(_, { email, password }, { res }) {
         const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
           return {
@@ -36,12 +36,34 @@ const mutation = new GraphQLObjectType({
         }
 
         const hash = await user.hashTokenVersion();
-
         const role = await Role.findById(user.roleId);
-        const token = signToken({ id: user.id, role: role.name }, '1d');
+        const { accessToken, refreshToken } = signTokens({ id: user.id, role: role.name, hash });
 
-        return { user, isAuth, hash, token };
+        res.cookie('x-access-token', accessToken, { httpOnly: true, secure: true });
+        res.cookie('x-refresh-token', refreshToken, { httpOnly: true, secure: true });
+
+        return { isAuth, user };
       },
+    },
+    logout: {
+      type: AuthType,
+      async resolve(_, __, { req: { auth: { isAuth, id } }, res }) {
+        if (!isAuth) {
+          return {
+            isAuth,
+            error: { path: 'auth', message: 'User is already logout!' }
+          }
+        }
+
+        const user = await User.findById(id);
+        user.tokenVersion += 1;
+        user.save();
+
+        res.clearCookie('x-access-token');
+        res.clearCookie('x-refresh-token');
+
+        return { isAuth: false, user };
+      }
     },
     addUser: {
       type: UserType,

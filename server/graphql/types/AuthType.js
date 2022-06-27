@@ -7,10 +7,8 @@ const UserType = require('./UserType');
 const AuthType = new GraphQLObjectType({
   name: 'Auth',
   fields: () => ({
-    user: { type: UserType },
     isAuth: { type: GraphQLBoolean },
-    hash: { type: GraphQLString },
-    token: { type: GraphQLString },
+    user: { type: UserType },
     error: { type: ErrorType }
   })
 });

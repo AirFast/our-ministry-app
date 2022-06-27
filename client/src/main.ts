@@ -17,12 +17,17 @@ app.use(router)
 app.use(i18n)
 
 const user = useUserStore()
+
+const allCookies = document.cookie
+console.log(allCookies);
+
+
 const apolloClient = new ApolloClient({
   uri: 'http://localhost:4000/graphql',
   cache: new InMemoryCache(),
-  headers: {
-    authorization: user.token ? `Bearer ${user.token}` : ''
-  }
+  // headers: {
+  //   authorization: user.token ? `Bearer ${user.token}` : ''
+  // }
 })
 
 app.provide(DefaultApolloClient, apolloClient)

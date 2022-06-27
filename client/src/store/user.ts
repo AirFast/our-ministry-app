@@ -10,9 +10,9 @@ export const useUserStore = defineStore('user', () => {
     isAuth,
     pending,
     token
-  };
-});
+  }
+})
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot))
 }

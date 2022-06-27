@@ -1,6 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID, GraphQLString } = graphql;
-const { signToken } = require('../shared/token');
+const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID } = graphql;
 
 const AuthType = require('./types/AuthType');
 const UserType = require('./types/UserType');
@@ -12,64 +11,30 @@ const Role = require('../models/role');
 const query = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
-    refresh: {
-      type: AuthType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-      },
-      resolve(_, { id }) {
-        if(id === '') {
-          return {
-            isAuth: false,
-            error: { path: 'auth', message: 'Token generation error!'}
-          };
-        }
-
-        const token = signToken({ id }, '1m');
-
-        return { isAuth: true, token };
-      }
-    },
     auth: {
       type: AuthType,
-      args: {
-        hash: { type: new GraphQLNonNull(GraphQLID) }
-      },
-      async resolve(_, { hash }, { client: { isAuth, id } }) {
-        if(!isAuth) {
-          return { 
+      async resolve(_, __, { req: { auth: { isAuth, id } } } ) {
+        if (!isAuth) {
+          return {
             isAuth,
-            error: { path: 'auth', message: 'Unauthenticated!' }
-          };
+            error: { path: 'auth', message: 'Auth is expired!' }
+          }
         }
-
-        console.log('auth');
 
         const user = await User.findById(id);
         if (!user) {
           return {
             isAuth: false,
-            error: { path: 'auth', message: 'Such user does not exist!' }
+            error: { path: 'auth', message: 'User not found!' }
           }
         }
 
-        const isInSession = user.compareTokenVersion(hash);
-        if (!isInSession) {
-          return {
-            isAuth: isInSession,
-            error: { path: 'auth', message: 'This user\'s session has ended!' }
-          }
-        }
-
-        const role = await Role.findById(user.roleId);
-        const token = signToken({ id: user.id, role: role.name }, '1d');
-
-        return { isAuth: isInSession, token };
+        return { isAuth, user };
       }
     },
     user: {
       type: UserType,
-      args: { id: { type: GraphQLID }},
+      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(_, { id }) {
         return User.findById(id);
       },
@@ -82,7 +47,7 @@ const query = new GraphQLObjectType({
     },
     role: {
       type: RoleType,
-      args: { id: { type: GraphQLID } },
+      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(_, { id }) {
         return Role.findById(id);
       },

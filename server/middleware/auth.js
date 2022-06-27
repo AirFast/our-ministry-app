@@ -1,39 +1,50 @@
-const { verifyToken } = require('../shared/token');
+const { verify } = require('jsonwebtoken');
+const { signTokens } = require('../shared/token');
 
-module.exports = (req, res, next) => {
-  const authorization = req.headers.authorization;
+const User = require('../models/user');
+const Role = require('../models/role');
 
-  if (!authorization) {
-    req.client = {
-      isAuth: false
-    };
-    return next();
-  }
+module.exports = async (req, res, next) => {
+  const accessToken = req.cookies['x-access-token'];
+  const refreshToken = req.cookies['x-refresh-token'];
 
-  const isBearer = authorization.split(' ')[0] === 'Bearer';
-  const token = authorization.split(' ')[1];
+  if (!accessToken && !refreshToken) {
+    req.auth = { isAuth: false, id: null, role: null };
 
-  if(!isBearer || !token || token === '') {
-    req.client = {
-      isAuth: false
-    };
     return next();
   }
 
   try {
-    const decodedToken = verifyToken(token);
+    const { id, role } = verify(accessToken, process.env.APP_SECRET_ACCESS_TOKEN_KEY);
+    req.auth = { isAuth: true, id, role };
 
-    console.log('auth middleware:', decodedToken);
-
-    req.client = {
-      isAuth: true,
-      ...decodedToken
-    };
     return next();
-  } catch (error) {
-    req.client = {
-      isAuth: false,
-    };
+  } catch (e) {}
+
+  try {
+    const { id, hash } = verify(refreshToken, process.env.APP_SECRET_REFRESH_TOKEN_KEY);
+    const user = await User.findById(id);
+    const isValidTokenVersion = user.compareTokenVersion(hash);
+
+    if (!user || !isValidTokenVersion) {
+      req.auth = { isAuth: false, id: null, role: null };
+
+      return next();
+    }
+
+    const role = await Role.findById(user.roleId);
+    const hashTokenVersion = await user.hashTokenVersion();
+    const tokens = signTokens({ id: user.id, role: role.name, hash: hashTokenVersion });
+
+    res.cookie('x-access-token', tokens.accessToken, { httpOnly: true, secure: true });
+    res.cookie('x-refresh-token', tokens.refreshToken, { httpOnly: true, secure: true });
+
+    req.auth = { isAuth: true, id: user.id, role: role.name };
+
+    return next();
+  } catch (e) {
+    req.auth = { isAuth: false, id: null, role: null };
+
     return next();
   }
 };

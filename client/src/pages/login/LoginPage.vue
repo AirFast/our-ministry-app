@@ -59,6 +59,9 @@ const formLoginSubmit = async () => {
   const { data: { login } } = await mutate(formLogin)
   
   if(login.isAuth) {
+
+    console.log(login);
+    
     // user.token = login.token
     userStorage.value.id = login.user.id
     userStorage.value.hash = login.hash
