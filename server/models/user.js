@@ -1,37 +1,33 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const { hash, compare } = require('../shared/bcrypt');
 
 const userSchema = new Schema({
-  firstName: String,
-  lastName: String,
-  username: String,
+  name: String,
   email: { type: String, required: true, index: { unique: true } },
   password: { type: String, required: true },
+  tokenVersion: { type: Number, default: 0},
   roleId: String,
 });
 
 userSchema.pre('save', function(next) {
-  const user = this;
+  if (!this.isModified('password')) return next();
 
-  if (!user.isModified('password')) return next();
-
-  bcrypt.genSalt(saltRounds, (err, salt) => {
-    if (err) return next(err);
-
-    bcrypt.hash(user.password, salt, (err, hash) => {
-        if (err) return next(err);
-
-        user.password = hash;
-        next();
-    });
-  });
+  this.password = hash(this.password);
+  next();
 });
 
-userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+userSchema.methods.comparePassword = function(password) {
+  return compare(password, this.password);
+};
+
+userSchema.methods.hashTokenVersion = function() {
+  return hash(`${this.tokenVersion}`);
+};
+
+userSchema.methods.compareTokenVersion = function(hash) {
+  return compare(`${this.tokenVersion}`, hash);
 };
 
 module.exports = model('User', userSchema);

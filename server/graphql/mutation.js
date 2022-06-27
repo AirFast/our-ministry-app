@@ -1,7 +1,8 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } = graphql;
+const { signToken } = require('../shared/token');
 
-const LoginType = require('./types/LoginType');
+const AuthType = require('./types/AuthType');
 const UserType = require('./types/UserType');
 const RoleType = require('./types/RoleType');
 
@@ -12,17 +13,17 @@ const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     login: {
-      type: LoginType,
+      type: AuthType,
       args: {
-        email: { type: GraphQLString },
-        password: { type: GraphQLString }
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(_, { email, password }) {
         const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
           return {
             isAuth: false,
-            error: { path: 'email', message: 'Wrong email!'}
+            error: { path: 'email', message: 'Wrong email!' }
           }
         }
 
@@ -30,25 +31,32 @@ const mutation = new GraphQLObjectType({
         if (!isAuth) {
           return {
             isAuth,
-            error: { path: 'password', message: 'Wrong password!'}
+            error: { path: 'password', message: 'Wrong password!' }
           }
         }
 
-        return { isAuth, token: '2345678', user }
+        const hash = await user.hashTokenVersion();
+
+        const role = await Role.findById(user.roleId);
+        const token = signToken({ id: user.id, role: role.name }, '1d');
+
+        return { user, isAuth, hash, token };
       },
     },
     addUser: {
       type: UserType,
       args: {
-        firstName: { type: new GraphQLNonNull(GraphQLString) },
-        lastName: { type: new GraphQLNonNull(GraphQLString) },
-        username: { type: new GraphQLNonNull(GraphQLString) },
+        name: { type: new GraphQLNonNull(GraphQLString) },
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
         roleId: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve(_, { firstName, lastName, username, email, password, roleId }) {
-        const user = new User({ firstName, lastName, username, email: email.toLowerCase(), password, roleId });
+      resolve(_, { name, email, password, roleId }, { client: { isAuth } }) {
+        if(!isAuth) {
+          throw new Error('Unauthenticated!')
+        }
+
+        const user = new User({ name, email: email.toLowerCase(), password, roleId });
 
         return user.save();
       },

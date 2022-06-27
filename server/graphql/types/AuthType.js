@@ -4,14 +4,15 @@ const { GraphQLObjectType, GraphQLBoolean, GraphQLString } = graphql;
 const ErrorType = require('./ErrorType');
 const UserType = require('./UserType');
 
-const LoginType = new GraphQLObjectType({
-  name: 'Login',
+const AuthType = new GraphQLObjectType({
+  name: 'Auth',
   fields: () => ({
-    isAuth: { type: GraphQLBoolean },
-    token: { type: GraphQLString },
     user: { type: UserType },
+    isAuth: { type: GraphQLBoolean },
+    hash: { type: GraphQLString },
+    token: { type: GraphQLString },
     error: { type: ErrorType }
   })
 });
 
-module.exports = LoginType;
+module.exports = AuthType;

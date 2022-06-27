@@ -5,15 +5,20 @@ import gql from 'graphql-tag'
 import { useMutation } from '@vue/apollo-composable'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+
+import { useUserStore } from '~/store/user'
 import { useUserStorage } from '~/composables/useUserStorage'
 
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
+const user = useUserStore()
+const userStorage = useUserStorage()
+
 const isPassVisible = ref(false)
 const error = ref('')
 const formLogin = reactive({
-  email: '',
-  password: ''
+  email: 'airfast.88@gmail.com',
+  password: '12345678'
 })
 
 const { push } = useRouter()
@@ -24,9 +29,9 @@ const LOGIN_MUTATION = gql`
     login(email: $email, password: $password) {
       isAuth
       token
+      hash
       user {
         id
-        username
         role {
           name
         }
@@ -52,19 +57,16 @@ const formLoginSubmit = async () => {
   }
 
   const { data: { login } } = await mutate(formLogin)
-  const userStorage = useUserStorage()
-
+  
   if(login.isAuth) {
+    // user.token = login.token
     userStorage.value.id = login.user.id
-    userStorage.value.username = login.user.username
-    userStorage.value.token = login.token
-    userStorage.value.isAuth = login.isAuth
-    userStorage.value.role = login.user.role.name
+    userStorage.value.hash = login.hash
 
-    formLogin.email = ''
-    formLogin.password = ''
+    // formLogin.email = ''
+    // formLogin.password = ''
 
-    push({name: 'home'})
+    // push({name: 'home'})
   }
 
   if(!login.isAuth) {

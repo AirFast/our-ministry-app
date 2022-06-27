@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLID, GraphQLString } = graphql;
+const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt } = graphql;
 
 const Role = require('../../models/role');
 
@@ -7,11 +7,10 @@ const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
     id: { type: GraphQLID },
-    firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString },
-    username: { type: GraphQLString },
+    name: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
+    tokenVersion: { type: GraphQLInt },
     role: {
       type: require('./RoleType'),
       resolve({ roleId }, __) {

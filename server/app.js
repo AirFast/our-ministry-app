@@ -6,8 +6,12 @@ const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const app = express();
 
+const auth = require('./middleware/auth');
+const cors = require('./middleware/cors');
+
 const schema = require('./graphql/schema');
 
+// DB connection
 mongoose.connect(
   process.env.APP_DB_URL,
   {
@@ -16,22 +20,15 @@ mongoose.connect(
   }
 );
 
-// CORS middleware
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  if (req.method === 'OPTIONS') {
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-      return res.status(200).json({});
-  }
-  next();
-});
-
 const port = process.env.APP_SERVER_PORT || 4000;
+
+// Middleware
+app.use(auth);
+app.use(cors);
 
 app.use('/graphql', graphqlHTTP({
   schema,
-  graphiql: process.env.APP_ENV !== 'production' ? true : false
+  graphiql: process.env.APP_ENV !== 'production' ? true : false,
 }));
 
 app.listen(port, () => {
