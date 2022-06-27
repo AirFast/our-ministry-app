@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-
 import gql from 'graphql-tag'
 import { useMutation } from '@vue/apollo-composable'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { useUserStore } from '~/store/user'
 import { useUserStorage } from '~/composables/useUserStorage'
+import { useUserStore } from '~/store/user'
 
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
-const user = useUserStore()
 const userStorage = useUserStorage()
+const user = useUserStore()
 
 const isPassVisible = ref(false)
 const error = ref('')
@@ -28,10 +27,9 @@ const LOGIN_MUTATION = gql`
   mutation Login ($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       isAuth
-      token
-      hash
       user {
-        id
+        name
+        email
         role {
           name
         }
@@ -59,17 +57,15 @@ const formLoginSubmit = async () => {
   const { data: { login } } = await mutate(formLogin)
   
   if(login.isAuth) {
-
-    console.log(login);
+    userStorage.value.isAuth = login.isAuth
     
-    // user.token = login.token
-    userStorage.value.id = login.user.id
-    userStorage.value.hash = login.hash
+    user.isAuth = login.isAuth
+    user.data = login.user
 
-    // formLogin.email = ''
-    // formLogin.password = ''
+    formLogin.email = ''
+    formLogin.password = ''
 
-    // push({name: 'home'})
+    push({name: 'home'})
   }
 
   if(!login.isAuth) {

@@ -10,7 +10,7 @@ const RoleType = new GraphQLObjectType({
     name: { type: GraphQLString },
     users: {
       type: new GraphQLList(require('./UserType')),
-      resolve({ id }, __) {
+      resolve({ id }) {
         return User.find({ roleId: id })
       }
     }

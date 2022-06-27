@@ -5,8 +5,8 @@ const User = require('../models/user');
 const Role = require('../models/role');
 
 module.exports = async (req, res, next) => {
-  const accessToken = req.cookies['x-access-token'];
-  const refreshToken = req.cookies['x-refresh-token'];
+  const accessToken = req.cookies['X-Access-Token'];
+  const refreshToken = req.cookies['X-Refresh-Token'];
 
   if (!accessToken && !refreshToken) {
     req.auth = { isAuth: false, id: null, role: null };
@@ -36,8 +36,8 @@ module.exports = async (req, res, next) => {
     const hashTokenVersion = await user.hashTokenVersion();
     const tokens = signTokens({ id: user.id, role: role.name, hash: hashTokenVersion });
 
-    res.cookie('x-access-token', tokens.accessToken, { httpOnly: true, secure: true });
-    res.cookie('x-refresh-token', tokens.refreshToken, { httpOnly: true, secure: true });
+    res.cookie('X-Access-Token', tokens.accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
+    res.cookie('X-Refresh-Token', tokens.refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
 
     req.auth = { isAuth: true, id: user.id, role: role.name };
 

@@ -41,7 +41,7 @@ const query = new GraphQLObjectType({
     },
     users: {
       type: new GraphQLList(UserType),
-      resolve(_, __) {
+      resolve() {
         return User.find({});
       },
     },
@@ -54,7 +54,7 @@ const query = new GraphQLObjectType({
     },
     roles: {
       type: new GraphQLList(RoleType),
-      resolve(_, __) {
+      resolve() {
         return Role.find({});
       },
     },

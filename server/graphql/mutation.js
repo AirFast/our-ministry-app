@@ -39,8 +39,8 @@ const mutation = new GraphQLObjectType({
         const role = await Role.findById(user.roleId);
         const { accessToken, refreshToken } = signTokens({ id: user.id, role: role.name, hash });
 
-        res.cookie('x-access-token', accessToken, { httpOnly: true, secure: true });
-        res.cookie('x-refresh-token', refreshToken, { httpOnly: true, secure: true });
+        res.cookie('X-Access-Token', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
+        res.cookie('X-Refresh-Token', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
 
         return { isAuth, user };
       },
@@ -59,8 +59,8 @@ const mutation = new GraphQLObjectType({
         user.tokenVersion += 1;
         user.save();
 
-        res.clearCookie('x-access-token');
-        res.clearCookie('x-refresh-token');
+        res.clearCookie('X-Access-Token');
+        res.clearCookie('X-Refresh-Token');
 
         return { isAuth: false, user };
       }

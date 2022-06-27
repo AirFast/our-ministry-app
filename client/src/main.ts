@@ -4,32 +4,39 @@ import App from '~/App.vue'
 import { createPinia } from 'pinia'
 import { router } from '~/router'
 import { i18n } from './i18n'
-
 import { DefaultApolloClient } from '@vue/apollo-composable'
-import { ApolloClient, InMemoryCache } from '@apollo/client/core'
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core'
 
 import { useUserStore } from '~/store/user'
 
+const link = createHttpLink({
+  uri: 'http://localhost:4000/graphql',
+  credentials: 'include'
+});
+
+const apolloClient = new ApolloClient({
+  link,
+  cache: new InMemoryCache(),
+})
+
 const app = createApp(App)
+
+
+router.beforeEach((to, from, next) => {
+  const user = useUserStore()
+
+  if (to.meta.auth && !user.isAuth) {
+    return next({ name: 'login' })
+  } else if (!to.meta.auth && user.isAuth) {
+    return next({ name: 'home' })
+  } else {
+    return next()
+  }
+})
 
 app.use(createPinia())
 app.use(router)
 app.use(i18n)
-
-const user = useUserStore()
-
-const allCookies = document.cookie
-console.log(allCookies);
-
-
-const apolloClient = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
-  cache: new InMemoryCache(),
-  // headers: {
-  //   authorization: user.token ? `Bearer ${user.token}` : ''
-  // }
-})
-
 app.provide(DefaultApolloClient, apolloClient)
 
 app.mount('#app')

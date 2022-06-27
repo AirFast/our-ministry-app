@@ -1,15 +1,19 @@
-import { computed, ref } from 'vue';
+import { useStorage } from '@vueuse/core';
+import { computed, reactive, ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { useUserStorage } from '~/composables/useUserStorage'
 
 export const useUserStore = defineStore('user', () => {
-  const token = ref('')
-  const isAuth = computed(() => token.value ? true : false)
-  const pending = computed(() => !token.value ? true : false)
+  const userStorage = useUserStorage()
+
+  const isAuth = ref(userStorage.value.isAuth)
+  const pending = computed(() => !isAuth.value ? true : false)
+  const data = reactive({})
 
   return {
     isAuth,
     pending,
-    token
+    data
   }
 })
 

@@ -2,8 +2,7 @@ import { useStorage } from '@vueuse/core'
 
 export const useUserStorage = () => {
   const user = useStorage('user', {
-    id: '',
-    hash: '',
+    isAuth: false,
     lang: 'uk'
   })
 
