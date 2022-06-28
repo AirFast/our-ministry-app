@@ -2,12 +2,16 @@ import AppHeader from './AppHeader.vue'
 import AppMain from './AppMain.vue'
 import AppFooter from './AppFooter.vue'
 
-import OptionButton from './OptionButton.vue'
+import VForm from './VForm.vue'
+import VField from './VField.vue'
+import VOptionButton from './VOptionButton.vue'
 
 export {
   AppFooter,
   AppMain,
   AppHeader,
 
-  OptionButton
+  VForm,
+  VField,
+  VOptionButton
 }
