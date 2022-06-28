@@ -55,10 +55,6 @@ const formLoginSubmit = async () => {
   const { data: { login } } = await mutate(formLogin)
   
   if(login.isAuth) {
-
-console.log(login);
-
-
     userStorage.value.isAuth = login.isAuth
     
     user.isAuth = login.isAuth
@@ -83,10 +79,10 @@ watch(formLogin, () => error.value = '')
     <VForm @submit.prevent="formLoginSubmit()" :error="error" name="login">
       <template #name>{{ t('login') }}</template>
       <template #fields>
-        <VField v-model="formLogin.email" type="email" />
-        <VField v-model="formLogin.password" type="password" />
+        <VField v-model="formLogin.email" type="email" name="email" />
+        <VField v-model="formLogin.password" type="password" name="password" />
       </template>
-      <template #footer>Якщо у вас ще немає облікового запису, перейдіть на сторінку реєстрації за цим <RouterLink :to="{name: 'register'}">посиланням</RouterLink>.</template>
+      <template #footer>Якщо у тебу ще немає облікового запису, перейди на сторінку реєстрації за цим <RouterLink :to="{name: 'register'}">посиланням</RouterLink>.</template>
     </VForm>
   </div>
 </template>

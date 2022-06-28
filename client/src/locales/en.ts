@@ -6,11 +6,12 @@ export const en = {
   register: 'Register',
   form: {
     field: {
+      name: 'First and last name',
       email: 'Email',
       password: 'Password'
     },
     validation: {
-      empty: 'Email or password cannot be blank',
+      empty: 'None of the fields cannot be blank',
       length: 'Password must consist of 8 characters',
       email: 'Such a user does not exist',
       password: 'Invalid email address or password'

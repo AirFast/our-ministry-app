@@ -9,6 +9,7 @@
 
   defineProps<{
     type: string
+    name: string
     modelValue: string
   }>()
 
@@ -21,7 +22,7 @@
     <input
       :value="modelValue"
       :type="!isPassVisible ? type : 'text'"
-      :placeholder="t(`form.field.${type}`)"
+      :placeholder="t(`form.field.${name}`)"
       @input="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
       class="w-full border rounded px-4 py-3 outline-none duration-200 focus:border-indigo-300 dark:text-slate-500" :class="{'pr-14': type === 'password'}"
     />
