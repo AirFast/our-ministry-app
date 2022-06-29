@@ -58,10 +58,7 @@ const formRegisterSubmit = async () => {
     return
   }
 
-  const { data: { register } } = await mutate(formRegister)
-
-  console.log(register);
-  
+  const { data: { register } } = await mutate(formRegister)  
   
   if(register.isAuth) {
     userStorage.value.isAuth = register.isAuth

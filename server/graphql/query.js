@@ -4,9 +4,11 @@ const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID } = graphql;
 const AuthType = require('./types/AuthType');
 const UserType = require('./types/UserType');
 const RoleType = require('./types/RoleType');
+const SettingType = require('./types/SettingType');
 
 const User = require('../models/user');
 const Role = require('../models/role');
+const Setting = require('../models/setting');
 
 const query = new GraphQLObjectType({
   name: 'Query',
@@ -57,6 +59,12 @@ const query = new GraphQLObjectType({
       resolve() {
         return Role.find({});
       },
+    },
+    settings: {
+      type: new GraphQLList(SettingType),
+      resolve() {
+        return Setting.find({});
+      }
     },
   }),
 });

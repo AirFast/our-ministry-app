@@ -29,9 +29,13 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'login' })
   } else if (!to.meta.auth && user.isAuth) {
     return next({ name: 'home' })
-  } else {
-    return next()
   }
+
+  if (to.meta.admin && user.data.role.name !== 'admin') {
+    return next({ name: 'home' })
+  }
+
+  return next()
 })
 
 app.use(createPinia())

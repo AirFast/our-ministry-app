@@ -30,7 +30,7 @@ export const uk = {
       guest: 'Гість'
     },
     menu: {
-      settings: 'Налаштування',
+      setting: 'Налаштування',
       logout: 'Вийти'
     }
   }

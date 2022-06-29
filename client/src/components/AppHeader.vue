@@ -4,6 +4,7 @@ import gql from 'graphql-tag'
 import { useMutation } from '@vue/apollo-composable'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { onClickOutside } from '@vueuse/core'
 
 import { useUserStorage } from '~/composables/useUserStorage'
 import { useUserStore } from '~/store/user'
@@ -16,7 +17,15 @@ const { t } = useI18n()
 const userStorage = useUserStorage()
 const user = useUserStore()
 
+const userMenuRef = ref(null)
 const isShowUserMenu = ref(false)
+
+onClickOutside(
+  userMenuRef,
+  (e) => {
+    isShowUserMenu.value = !isShowUserMenu.value
+  },
+)
 
 const LOGOUT_MUTATION = gql`
   mutation Logout {
@@ -34,7 +43,13 @@ const logout = async () => {
     userStorage.value.isAuth = logout.isAuth
     
     user.isAuth = logout.isAuth
-    user.data = {}
+    user.data = {
+      name: '',
+      email: '',
+      role: {
+        name: ''
+      }
+    }
 
     push({name: 'login'})
   }
@@ -52,18 +67,18 @@ const logout = async () => {
           <VOptionButton @click="isShowUserMenu = !isShowUserMenu">
             <UserIcon class="w-6 h-6 text-indigo-500 dark:text-indigo-200" />
           </VOptionButton>
-          <ul v-if="isShowUserMenu" class="absolute -right-2 bottom-100 mt-4 whitespace-nowrap rounded ring-1 ring-indigo-500/5 shadow-md dark:bg-slate-800">
+          <ul v-if="isShowUserMenu" ref="userMenuRef" class="absolute -right-2 bottom-100 mt-4 whitespace-nowrap rounded ring-1 ring-indigo-500/5 shadow-md dark:bg-slate-800">
             <li>
               <span class="block font-medium mx-2 p-3 border-b border-slate-100 dark:border-slate-700">
                 {{ user.data.name }}
                 <span class="block font-normal text-sm">{{ t(`user.role.${user.data.role.name}`) }}</span>
               </span>
             </li>
-            <li>
-              <button type="button" class="flex items-center w-full px-5 py-3 transition-all duration-200  ease-out hover:bg-slate-100 dark:hover:bg-slate-700">
+            <li v-if="user.data.role.name === 'admin'">
+              <RouterLink :to="{name: 'setting'}" class="flex items-center w-full px-5 py-3 transition-all duration-200  ease-out hover:bg-slate-100 dark:hover:bg-slate-700">
                 <CogIcon class="w-5 h-5 mr-3 text-indigo-500 dark:text-indigo-200" />
-                <span>{{ t('user.menu.settings') }}</span>
-              </button>
+                <span>{{ t('user.menu.setting') }}</span>
+              </RouterLink>
             </li>
             <li>
               <button @click="logout" type="button" class="flex items-center w-full px-5 py-3 transition-all duration-200  ease-out hover:bg-slate-100 dark:hover:bg-slate-700">

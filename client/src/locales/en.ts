@@ -30,7 +30,7 @@ export const en = {
       guest: 'Guest'
     },
     menu: {
-      settings: 'Settings',
+      setting: 'Setting',
       logout: 'Logout'
     }
   }

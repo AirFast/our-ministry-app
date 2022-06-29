@@ -1,13 +1,17 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } = graphql;
+const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString, GraphQLInt } = graphql;
 const { signTokens } = require('../shared/token');
 
 const AuthType = require('./types/AuthType');
 const UserType = require('./types/UserType');
 const RoleType = require('./types/RoleType');
+const SettingType = require('./types/SettingType');
+
 
 const User = require('../models/user');
 const Role = require('../models/role');
+const Setting = require('../models/setting');
+
 
 const mutation = new GraphQLObjectType({
   name: 'Mutation',
@@ -106,9 +110,9 @@ const mutation = new GraphQLObjectType({
         password: { type: new GraphQLNonNull(GraphQLString) },
         roleId: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve(_, { name, email, password, roleId }, { client: { isAuth } }) {
+      resolve(_, { name, email, password, roleId }, { req: { auth: { isAuth } } }) {
         if(!isAuth) {
-          throw new Error('Unauthenticated!')
+          throw new Error('Unauthenticated!');
         }
 
         const user = new User({ name, email: email.toLowerCase(), password, roleId });
@@ -127,6 +131,22 @@ const mutation = new GraphQLObjectType({
         return role.save();
       },
     },
+    addSetting: {
+      type: SettingType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        value: { type: GraphQLString },
+      },
+      resolve(_, { name, value }, { req: { auth: { role } } }) {
+        if(role !== 'user') {
+          throw new Error('Unauthenticated!');
+        }
+
+        const setting = new Setting({ name, value });
+
+        return setting.save();
+      }
+    }
   }),
 });
 

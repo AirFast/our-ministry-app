@@ -18,5 +18,11 @@ export const pages: RouteRecordRaw[] = [
     name: 'register',
     meta: { auth: false },
     component: () => import('./register'),
+  },
+  {
+    path: '/setting',
+    name: 'setting',
+    meta: { auth: true, admin: true },
+    component: () => import('./setting'),
   }
 ]
