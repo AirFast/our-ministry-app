@@ -53,17 +53,22 @@ const logout = async () => {
             <UserIcon class="w-6 h-6 text-indigo-500 dark:text-indigo-200" />
           </VOptionButton>
           <ul v-if="isShowUserMenu" class="absolute -right-2 bottom-100 mt-4 whitespace-nowrap rounded ring-1 ring-indigo-500/5 shadow-md dark:bg-slate-800">
-            <li><span class="block font-medium mx-2 p-3 border-b border-slate-100 dark:border-slate-700">{{ user.data.name }}</span></li>
+            <li>
+              <span class="block font-medium mx-2 p-3 border-b border-slate-100 dark:border-slate-700">
+                {{ user.data.name }}
+                <span class="block font-normal text-sm">{{ t(`user.role.${user.data.role.name}`) }}</span>
+              </span>
+            </li>
             <li>
               <button type="button" class="flex items-center w-full px-5 py-3 transition-all duration-200  ease-out hover:bg-slate-100 dark:hover:bg-slate-700">
                 <CogIcon class="w-5 h-5 mr-3 text-indigo-500 dark:text-indigo-200" />
-                <span>Налаштування</span>
+                <span>{{ t('user.menu.settings') }}</span>
               </button>
             </li>
             <li>
               <button @click="logout" type="button" class="flex items-center w-full px-5 py-3 transition-all duration-200  ease-out hover:bg-slate-100 dark:hover:bg-slate-700">
                 <LogoutIcon class="w-5 h-5 mr-3 text-indigo-500 dark:text-indigo-200" />
-                <span>Вийти</span>
+                <span>{{ t('user.menu.logout') }}</span>
               </button>
             </li>
           </ul>

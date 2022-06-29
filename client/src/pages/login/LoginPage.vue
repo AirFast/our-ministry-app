@@ -15,7 +15,11 @@ const { t } = useI18n()
 const userStorage = useUserStorage()
 const user = useUserStore()
 
-const error = ref('')
+const error = reactive({
+  path: '',
+  value: ''
+})
+
 const formLogin = reactive({
   email: '',
   password: ''
@@ -43,12 +47,12 @@ const { mutate } = useMutation(LOGIN_MUTATION)
 
 const formLoginSubmit = async () => {
   if(formLogin.email === '' || formLogin.password === '') {
-    error.value = 'empty'
+    error.path = 'empty'
     return
   }
 
   if(formLogin.password.length < 8) {
-    error.value = 'length'
+    error.path = 'length'
     return
   }
 
@@ -67,11 +71,15 @@ const formLoginSubmit = async () => {
   }
 
   if(!login.isAuth) {
-    error.value = login.error.path
+    error.path = login.error.path
+    error.value = login.error.value
   }
 }
 
-watch(formLogin, () => error.value = '')
+watch(formLogin, () => {
+  error.path = ''
+  error.value = ''
+})
 </script>
 
 <template>
@@ -82,7 +90,10 @@ watch(formLogin, () => error.value = '')
         <VField v-model="formLogin.email" type="email" name="email" />
         <VField v-model="formLogin.password" type="password" name="password" />
       </template>
-      <template #footer>Якщо у тебу ще немає облікового запису, перейди на сторінку реєстрації за цим <RouterLink :to="{name: 'register'}">посиланням</RouterLink>.</template>
+      <template #footer>
+        {{ t('form.footer.login') }}
+        <RouterLink :to="{name: 'register'}">{{ t('link') }}</RouterLink>.
+      </template>
     </VForm>
   </div>
 </template>

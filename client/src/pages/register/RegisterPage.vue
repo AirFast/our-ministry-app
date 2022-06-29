@@ -15,64 +15,76 @@ const { t } = useI18n()
 const userStorage = useUserStorage()
 const user = useUserStore()
 
-const error = ref('')
+const error = reactive({
+  path: '',
+  value: ''
+})
+
 const formRegister = reactive({
   name: '',
   email: '',
   password: ''
 })
 
-// const LOGIN_MUTATION = gql`
-//   mutation Login ($email: String!, $password: String!) {
-//     login(email: $email, password: $password) {
-//       isAuth
-//       user {
-//         name
-//         email
-//         role {
-//           name
-//         }
-//       }
-//       error {
-//         path
-//         message
-//       }
-//     }
-//   } 
-// `
-// const { mutate } = useMutation(LOGIN_MUTATION)
+const REGISTER_MUTATION = gql`
+  mutation Register ($name: String!, $email: String!, $password: String!) {
+    register(name: $name, email: $email, password: $password) {
+      isAuth
+      user {
+        name
+        email
+        role {
+          name
+        }
+      }
+      error {
+        path
+        value
+        message
+      }
+    }
+  } 
+`
+const { mutate } = useMutation(REGISTER_MUTATION)
 
 const formRegisterSubmit = async () => {
   if(formRegister.name === '' || formRegister.email === '' || formRegister.password === '') {
-    error.value = 'empty'
+    error.path = 'empty'
     return
   }
 
   if(formRegister.password.length < 8) {
-    error.value = 'length'
+    error.path = 'length'
     return
   }
 
-  // const { data: { login } } = await mutate(formLogin)
+  const { data: { register } } = await mutate(formRegister)
+
+  console.log(register);
   
-  // if(login.isAuth) {
-  //   userStorage.value.isAuth = login.isAuth
+  
+  if(register.isAuth) {
+    userStorage.value.isAuth = register.isAuth
     
-  //   user.isAuth = login.isAuth
-  //   user.data = login.user
+    user.isAuth = register.isAuth
+    user.data = register.user
 
-  //   formLogin.email = ''
-  //   formLogin.password = ''
+    formRegister.email = ''
+    formRegister.password = ''
 
-  //   push({name: 'home'})
-  // }
+    push({name: 'home'})
+  }
 
-  // if(!login.isAuth) {
-  //   error.value = login.error.path
-  // }
+  if(!register.isAuth) {
+    error.path = register.error.path
+    error.value = register.error.value
+  }
 }
 
-watch(formRegister, () => error.value = '')
+watch(formRegister, () => {
+  error.path = ''
+  error.value = ''
+})
 </script>
 
 <template>
@@ -84,7 +96,10 @@ watch(formRegister, () => error.value = '')
         <VField v-model="formRegister.email" type="email" name="email" />
         <VField v-model="formRegister.password" type="password" name="password" />
       </template>
-      <template #footer>Якщо у тебе вже є облікововий запис, перейди на сторінку входу за цим <RouterLink :to="{name: 'login'}">посиланням</RouterLink>.</template>
+      <template #footer>
+        {{ t('form.footer.register') }}
+        <RouterLink :to="{name: 'login'}">{{ t('link') }}</RouterLink>.
+      </template>
     </VForm>
   </div>
 </template>

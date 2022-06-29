@@ -65,6 +65,39 @@ const mutation = new GraphQLObjectType({
         return { isAuth: false, user };
       }
     },
+    register: {
+      type: AuthType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(_, { name, email, password }, { res }) {
+        const role = await Role.findOne({ name: 'guest' });
+        const user = new User({ name, email: email.toLowerCase(), password, roleId: role.id });
+
+        try {
+          const result = await user.save();
+          
+          const hash = await user.hashTokenVersion();
+          const { accessToken, refreshToken } = signTokens({ id: user.id, role: role.name, hash });
+
+          res.cookie('X-Access-Token', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
+          res.cookie('X-Refresh-Token', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
+
+          return { isAuth: true, user: result };
+        } catch (err) {
+          return {
+            isAuth: false,
+            error: {
+              path: 'register',
+              value: err.keyValue.email,
+              message: err.code === 11000 ? `User ${err.keyValue.email} already exists!` : 'Unknown error!'
+            }
+          };
+        }
+      }
+    },
     addUser: {
       type: UserType,
       args: {
