@@ -6,7 +6,7 @@ interface IUser {
   email: string
   password: string
   tokenVersion: number
-  roleId?: Types.ObjectId
+  roleId: Types.ObjectId
 }
 
 interface IUserMethods {

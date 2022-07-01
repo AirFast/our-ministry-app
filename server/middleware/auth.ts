@@ -9,7 +9,7 @@ interface RequestWithAuth extends Request {
   auth?: {
     isAuth: boolean
     id: string | null
-    role: string | null | undefined
+    role: string | null
   }
 }
 
@@ -44,21 +44,21 @@ export const auth = async (req: RequestWithAuth, res: Response, next: NextFuncti
     const { id, hash } = verify(refreshToken, process.env.APP_SECRET_REFRESH_TOKEN_KEY!) as JwtPayloadRefreshToken;
     const user = await User.findById(id);
     const isValidTokenVersion = user?.compareTokenVersion(hash);
+    const role = await Role.findById(user?.roleId);
 
-    if (!user || !isValidTokenVersion) {
+    if (!user || !isValidTokenVersion || !role) {
       req.auth = { isAuth: false, id: null, role: null };
 
       return next();
     }
 
-    const role = await Role.findById(user.roleId);
     const hashTokenVersion = user.hashTokenVersion();
-    const tokens = signTokens({ id: user.id, role: role?.name, hash: hashTokenVersion });
+    const tokens = signTokens({ id: user.id, role: role.name, hash: hashTokenVersion });
 
     res.cookie('X-Access-Token', tokens.accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
     res.cookie('X-Refresh-Token', tokens.refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
 
-    req.auth = { isAuth: true, id: user.id, role: role?.name };
+    req.auth = { isAuth: true, id: user.id, role: role.name };
 
     return next();
   } catch (e) {
