@@ -1,16 +1,15 @@
-const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID } = graphql;
+import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID } from 'graphql';
 
-const AuthType = require('./types/AuthType');
-const UserType = require('./types/UserType');
-const RoleType = require('./types/RoleType');
-const SettingType = require('./types/SettingType');
+import { AuthType } from './types/AuthType';
+import { UserType } from './types/UserType';
+import { RoleType } from'./types/RoleType';
+import { SettingType } from'./types/SettingType';
 
-const User = require('../models/user');
-const Role = require('../models/role');
-const Setting = require('../models/setting');
+import { User } from '../models/user';
+import { Role } from '../models/role';
+import { Setting } from '../models/setting';
 
-const query = new GraphQLObjectType({
+export const query = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
     auth: {
@@ -68,5 +67,3 @@ const query = new GraphQLObjectType({
     },
   }),
 });
-
-module.exports = query;

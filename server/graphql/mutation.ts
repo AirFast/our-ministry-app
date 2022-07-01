@@ -1,19 +1,18 @@
-const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString, GraphQLInt } = graphql;
-const { signTokens } = require('../shared/token');
+import { MongoServerError } from 'mongodb';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } from 'graphql';
+import { signTokens } from '../shared/token';
 
-const AuthType = require('./types/AuthType');
-const UserType = require('./types/UserType');
-const RoleType = require('./types/RoleType');
-const SettingType = require('./types/SettingType');
+import { AuthType } from './types/AuthType';
+import { UserType } from './types/UserType';
+import { RoleType } from './types/RoleType';
+import { SettingType } from './types/SettingType';
+
+import { User } from '../models/user';
+import { Role } from '../models/role';
+import { Setting } from '../models/setting';
 
 
-const User = require('../models/user');
-const Role = require('../models/role');
-const Setting = require('../models/setting');
-
-
-const mutation = new GraphQLObjectType({
+export const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     login: {
@@ -39,9 +38,9 @@ const mutation = new GraphQLObjectType({
           }
         }
 
-        const hash = await user.hashTokenVersion();
+        const hash = user.hashTokenVersion();
         const role = await Role.findById(user.roleId);
-        const { accessToken, refreshToken } = signTokens({ id: user.id, role: role.name, hash });
+        const { accessToken, refreshToken } = signTokens({ id: user.id, role: role?.name, hash });
 
         res.cookie('X-Access-Token', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
         res.cookie('X-Refresh-Token', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
@@ -60,6 +59,13 @@ const mutation = new GraphQLObjectType({
         }
 
         const user = await User.findById(id);
+        if (!user) {
+          res.clearCookie('X-Access-Token');
+          res.clearCookie('X-Refresh-Token');
+
+          return { isAuth: false };
+        }
+
         user.tokenVersion += 1;
         user.save();
 
@@ -78,27 +84,29 @@ const mutation = new GraphQLObjectType({
       },
       async resolve(_, { name, email, password }, { res }) {
         const role = await Role.findOne({ name: 'guest' });
-        const user = new User({ name, email: email.toLowerCase(), password, roleId: role.id });
+        const user = new User({ name, email: email.toLowerCase(), password, roleId: role?.id });
 
         try {
           const result = await user.save();
           
-          const hash = await user.hashTokenVersion();
-          const { accessToken, refreshToken } = signTokens({ id: user.id, role: role.name, hash });
+          const hash = user.hashTokenVersion();
+          const { accessToken, refreshToken } = signTokens({ id: user.id, role: role?.name, hash });
 
           res.cookie('X-Access-Token', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
           res.cookie('X-Refresh-Token', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
 
           return { isAuth: true, user: result };
         } catch (err) {
-          return {
-            isAuth: false,
-            error: {
-              path: 'register',
-              value: err.keyValue.email,
-              message: err.code === 11000 ? `User ${err.keyValue.email} already exists!` : 'Unknown error!'
-            }
-          };
+          if (err instanceof MongoServerError) {
+            return {
+              isAuth: false,
+              error: {
+                path: 'register',
+                value: err.keyValue.email,
+                message: err.code === 11000 ? `User ${err.keyValue.email} already exists!` : 'Unknown error!'
+              }
+            };
+          }
         }
       }
     },
@@ -149,5 +157,3 @@ const mutation = new GraphQLObjectType({
     }
   }),
 });
-
-module.exports = mutation;
