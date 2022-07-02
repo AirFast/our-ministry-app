@@ -6,5 +6,5 @@ export const ErrorType = new GraphQLObjectType({
     path: { type: GraphQLString },
     value: { type: GraphQLString },
     message: { type: GraphQLString },
-  })
+  }),
 });

@@ -8,6 +8,6 @@ export const AuthType = new GraphQLObjectType({
   fields: () => ({
     isAuth: { type: GraphQLBoolean },
     user: { type: UserType },
-    error: { type: ErrorType }
-  })
+    error: { type: ErrorType },
+  }),
 });

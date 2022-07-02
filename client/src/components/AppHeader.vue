@@ -74,7 +74,7 @@ const logout = async () => {
                 <span class="block font-normal text-sm">{{ t(`user.role.${user.data.role.name}`) }}</span>
               </span>
             </li>
-            <li v-if="user.data.role.name === 'admin'">
+            <li @click="isShowUserMenu = !isShowUserMenu" v-if="user.data.role.name === 'admin'">
               <RouterLink :to="{name: 'setting'}" class="flex items-center w-full px-5 py-3 transition-all duration-200  ease-out hover:bg-slate-100 dark:hover:bg-slate-700">
                 <CogIcon class="w-5 h-5 mr-3 text-indigo-500 dark:text-indigo-200" />
                 <span>{{ t('user.menu.setting') }}</span>

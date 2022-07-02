@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
 
 interface ISetting {
-  name: string
-  value?: string
+  name: string;
+  value?: string;
 }
 
 const settingSchema = new Schema<ISetting>({

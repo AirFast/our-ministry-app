@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response, NextFunction } from 'express';
 import { verify, JwtPayload } from 'jsonwebtoken';
 import { signTokens } from '../shared/token';
 
@@ -7,20 +7,20 @@ import { Role } from '../models/role';
 
 interface RequestWithAuth extends Request {
   auth?: {
-    isAuth: boolean
-    id: string | null
-    role: string | null
-  }
+    isAuth: boolean;
+    id: string | null;
+    role: string | null;
+  };
 }
 
 interface JwtPayloadAccessToken extends JwtPayload {
-  id: string
-  role: string
+  id: string;
+  role: string;
 }
 
 interface JwtPayloadRefreshToken extends JwtPayload {
-  id: string
-  hash: string
+  id: string;
+  hash: string;
 }
 
 export const auth = async (req: RequestWithAuth, res: Response, next: NextFunction) => {

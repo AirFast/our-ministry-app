@@ -6,5 +6,5 @@ export const SettingType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     value: { type: GraphQLString },
-  })
+  }),
 });

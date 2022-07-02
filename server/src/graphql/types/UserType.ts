@@ -16,7 +16,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
       type: RoleType,
       resolve({ roleId }) {
         return Role.findById(roleId);
-      }
-    }
-  })
+      },
+    },
+  }),
 });

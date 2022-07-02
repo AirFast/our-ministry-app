@@ -2,8 +2,8 @@ import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID } from 'graph
 
 import { AuthType } from './types/AuthType';
 import { UserType } from './types/UserType';
-import { RoleType } from'./types/RoleType';
-import { SettingType } from'./types/SettingType';
+import { RoleType } from './types/RoleType';
+import { SettingType } from './types/SettingType';
 
 import { User } from '../models/user';
 import { Role } from '../models/role';
@@ -14,24 +14,24 @@ export const query = new GraphQLObjectType({
   fields: () => ({
     auth: {
       type: AuthType,
-      async resolve(_, __, { req: { auth: { isAuth, id } } } ) {
+      async resolve(_, __, { req: { auth: { isAuth, id } } }) {
         if (!isAuth) {
           return {
             isAuth,
-            error: { path: 'auth', message: 'Auth is expired!' }
-          }
+            error: { path: 'auth', message: 'Auth is expired!' },
+          };
         }
 
         const user = await User.findById(id);
         if (!user) {
           return {
             isAuth: false,
-            error: { path: 'auth', message: 'User not found!' }
-          }
+            error: { path: 'auth', message: 'User not found!' },
+          };
         }
 
         return { isAuth, user };
-      }
+      },
     },
     user: {
       type: UserType,
@@ -63,7 +63,7 @@ export const query = new GraphQLObjectType({
       type: new GraphQLList(SettingType),
       resolve() {
         return Setting.find({});
-      }
+      },
     },
   }),
 });

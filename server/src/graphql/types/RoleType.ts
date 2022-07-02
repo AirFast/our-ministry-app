@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString } from 'graphql';
 
-import { UserType } from './UserType'
+import { UserType } from './UserType';
 
 import { User } from '../../models/user';
 
@@ -12,8 +12,8 @@ export const RoleType = new GraphQLObjectType({
     users: {
       type: new GraphQLList(UserType),
       resolve({ id }) {
-        return User.find({ roleId: id })
-      }
-    }
-  })
+        return User.find({ roleId: id });
+      },
+    },
+  }),
 });
