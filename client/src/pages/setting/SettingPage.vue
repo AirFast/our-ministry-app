@@ -22,7 +22,16 @@ const SETTINGS_QUERY = gql`
   } 
 `
 
-const { result , loading } = useQuery<Query>(SETTINGS_QUERY)
+const { result, loading, onResult } = useQuery<Query>(SETTINGS_QUERY)
+
+onResult(() => {
+    if(result.value) {
+      result.value.settings?.map(setting => {
+        settings[setting?.name as keyof typeof settings] = setting?.value ?? ''
+      })
+    }
+  }
+)
 </script>
 
 <template>
@@ -32,8 +41,8 @@ const { result , loading } = useQuery<Query>(SETTINGS_QUERY)
   </header>
   <section v-if="!loading" class="flex items-center py-8">
     <p class="mr-8">Служіння зі стендом</p>
-    <select v-for="(setting, i) in result?.settings" :key="i" class="appearance-none font-medium outline-none pl-8 pr-7 py-3 mr-5 last-of-type:mr-0 rounded ring-1 ring-indigo-500/5 shadow bg-slate-50 dark:bg-slate-800">
-      <option v-for="item of 23" :key="item" :value="item" :selected="setting?.value === `${item}`">{{ item < 10 ? `0${item}:00` : `${item}:00` }}</option>
+    <select v-for="(setting, i) in result?.settings" :key="i" v-model="settings[setting?.name as keyof typeof settings]" class="appearance-none font-medium outline-none pl-8 pr-7 py-3 mr-5 last-of-type:mr-0 rounded ring-1 ring-indigo-500/5 shadow bg-slate-50 dark:bg-slate-800">
+      <option v-for="item of 23" :key="item" :value="item">{{ item < 10 ? `0${item}:00` : `${item}:00` }}</option>
     </select>
   </section>
 </template>

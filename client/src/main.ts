@@ -31,7 +31,7 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'home' })
   }
 
-  if (to.meta.admin && user.data.role.name !== 'admin') {
+  if (to.meta.admin && user.data.role?.name !== 'admin') {
     return next({ name: 'home' })
   }
 
