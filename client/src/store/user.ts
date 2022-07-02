@@ -1,27 +1,16 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { useUserStorage } from '~/composables/useUserStorage'
+import { Maybe, User } from '~/graphqlTypes';
 
-type UserData = {
-  name: string
-  email: string
-  role: {
-    name: string
-  }
-}
+
 
 export const useUserStore = defineStore('user', () => {
   const userStorage = useUserStorage()
 
   const isAuth = ref(userStorage.value.isAuth)
   const pending = computed(() => !isAuth.value)
-  const data = reactive<UserData>({
-    name: '',
-    email: '',
-    role: {
-      name: ''
-    }
-  })
+  const data: Maybe<User> = reactive({})
 
   return {
     isAuth,

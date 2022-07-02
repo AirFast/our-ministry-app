@@ -92,7 +92,6 @@ export const mutation = new GraphQLObjectType({
           const { accessToken, refreshToken } = signTokens({ id: user.id, role: role?.name ?? 'guest', hash });
 
           res.cookie('X-Access-Token', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-
           res.cookie('X-Refresh-Token', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
 
           return { isAuth: true, user: result };

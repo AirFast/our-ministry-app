@@ -5,12 +5,11 @@ import { useMutation } from '@vue/apollo-composable'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
-
 import { useUserStorage } from '~/composables/useUserStorage'
 import { useUserStore } from '~/store/user'
-
 import { UserIcon, CogIcon, LogoutIcon } from '@heroicons/vue/solid'
 import { VOptionButton } from '~/components'
+import { Mutation } from '~/graphqlTypes'
 
 const { push } = useRouter()
 const { t } = useI18n()
@@ -34,21 +33,19 @@ const LOGOUT_MUTATION = gql`
     }
   } 
 `
-const { mutate } = useMutation(LOGOUT_MUTATION)
+const { mutate } = useMutation<Mutation>(LOGOUT_MUTATION)
 
 const logout = async () => {
-  const { data: { logout } } = await mutate()
+  const res = await mutate()
 
-  if(!logout.isAuth) {
-    userStorage.value.isAuth = logout.isAuth
+  if(!res?.data?.logout?.isAuth) {
+    userStorage.value.isAuth = res?.data?.logout?.isAuth ?? false
     
-    user.isAuth = logout.isAuth
+    user.isAuth = res?.data?.logout?.isAuth ?? false
     user.data = {
       name: '',
       email: '',
-      role: {
-        name: ''
-      }
+      role: {}
     }
 
     push({name: 'login'})
@@ -71,10 +68,10 @@ const logout = async () => {
             <li>
               <span class="block font-medium mx-2 p-3 border-b border-slate-100 dark:border-slate-700">
                 {{ user.data.name }}
-                <span class="block font-normal text-sm">{{ t(`user.role.${user.data.role.name}`) }}</span>
+                <span class="block font-normal text-sm">{{ t(`user.role.${user.data.role?.name}`) }}</span>
               </span>
             </li>
-            <li @click="isShowUserMenu = !isShowUserMenu" v-if="user.data.role.name === 'admin'">
+            <li @click="isShowUserMenu = !isShowUserMenu" v-if="user.data.role?.name === 'admin'">
               <RouterLink :to="{name: 'setting'}" class="flex items-center w-full px-5 py-3 transition-all duration-200  ease-out hover:bg-slate-100 dark:hover:bg-slate-700">
                 <CogIcon class="w-5 h-5 mr-3 text-indigo-500 dark:text-indigo-200" />
                 <span>{{ t('user.menu.setting') }}</span>

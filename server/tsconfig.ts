@@ -7,9 +7,7 @@ module.exports = {
     strict: true,
     esModuleInterop: true,
     lib: ['es2018', 'esnext.asynciterable'],
-    paths: {
-      '~/*': ['./src/*'],
-    },
+    paths: { '~/*': ['./src/*'] },
   },
   exclude: ['node_modules'],
 };

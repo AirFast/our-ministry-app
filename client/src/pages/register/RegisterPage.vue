@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import gql from 'graphql-tag'
 import { useMutation } from '@vue/apollo-composable'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-
 import { useUserStorage } from '~/composables/useUserStorage'
 import { useUserStore } from '~/store/user'
-
 import { VForm, VField } from '~/components'
+import { Maybe, Mutation, Error, MutationRegisterArgs } from '~/graphqlTypes'
 
 const { push } = useRouter()
 const { t } = useI18n()
 const userStorage = useUserStorage()
 const user = useUserStore()
 
-const error = reactive({
+const error: Maybe<Error> = reactive({
   path: '',
   value: ''
 })
@@ -45,7 +44,7 @@ const REGISTER_MUTATION = gql`
     }
   } 
 `
-const { mutate } = useMutation(REGISTER_MUTATION)
+const { mutate } = useMutation<Mutation, MutationRegisterArgs>(REGISTER_MUTATION)
 
 const formRegisterSubmit = async () => {
   if(formRegister.name === '' || formRegister.email === '' || formRegister.password === '') {
@@ -58,13 +57,15 @@ const formRegisterSubmit = async () => {
     return
   }
 
-  const { data: { register } } = await mutate(formRegister)  
+  const res = await mutate(formRegister)  
   
-  if(register.isAuth) {
-    userStorage.value.isAuth = register.isAuth
+  if(res?.data?.register?.isAuth) {
+    userStorage.value.isAuth = res.data.register.isAuth
     
-    user.isAuth = register.isAuth
-    user.data = register.user
+    user.isAuth = res.data.register.isAuth
+    user.data.name = res.data.register.user?.name
+    user.data.email = res.data.register.user?.email
+    user.data.role = res.data.register.user?.role
 
     formRegister.email = ''
     formRegister.password = ''
@@ -72,9 +73,9 @@ const formRegisterSubmit = async () => {
     push({name: 'home'})
   }
 
-  if(!register.isAuth) {
-    error.path = register.error.path
-    error.value = register.error.value
+  if(!res?.data?.register?.isAuth) {
+    error.path = res?.data?.register?.error?.path
+    error.value = res?.data?.register?.error?.value
   }
 }
 

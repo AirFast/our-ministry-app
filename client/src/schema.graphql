@@ -1,0 +1,48 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+type Query {
+  auth: Auth
+  user(id: ID!): User
+  users: [User]
+  role(id: ID!): Role
+  roles: [Role]
+  settings: [Setting]
+}
+type Auth {
+  isAuth: Boolean
+  user: User
+  error: Error
+}
+type User {
+  id: ID
+  name: String
+  email: String
+  password: String
+  tokenVersion: Int
+  role: Role
+}
+type Role {
+  id: ID
+  name: String
+  users: [User]
+}
+type Error {
+  path: String
+  value: String
+  message: String
+}
+type Setting {
+  id: ID
+  name: String
+  value: String
+}
+type Mutation {
+  login(email: String!, password: String!): Auth
+  logout: Auth
+  register(name: String!, email: String!, password: String!): Auth
+  addUser(name: String!, email: String!, password: String!, roleId: ID!): User
+  addRole(name: String!): Role
+  addSetting(name: String!, value: String): Setting
+}

@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import gql from 'graphql-tag'
 import { useMutation } from '@vue/apollo-composable'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-
 import { useUserStorage } from '~/composables/useUserStorage'
 import { useUserStore } from '~/store/user'
-
 import { VForm, VField } from '~/components'
+import { Maybe, Mutation, MutationLoginArgs, Error } from '~/graphqlTypes'
 
 const { push } = useRouter()
 const { t } = useI18n()
 const userStorage = useUserStorage()
 const user = useUserStore()
 
-const error = reactive({
+const error: Maybe<Error> = reactive({
   path: '',
   value: ''
 })
@@ -43,7 +42,7 @@ const LOGIN_MUTATION = gql`
     }
   } 
 `
-const { mutate } = useMutation(LOGIN_MUTATION)
+const { mutate } = useMutation<Mutation, MutationLoginArgs>(LOGIN_MUTATION)
 
 const formLoginSubmit = async () => {
   if(formLogin.email === '' || formLogin.password === '') {
@@ -56,13 +55,15 @@ const formLoginSubmit = async () => {
     return
   }
 
-  const { data: { login } } = await mutate(formLogin)
+  const res = await mutate(formLogin)
   
-  if(login.isAuth) {
-    userStorage.value.isAuth = login.isAuth
+  if(res?.data?.login?.isAuth) {
+    userStorage.value.isAuth = res.data.login.isAuth
     
-    user.isAuth = login.isAuth
-    user.data = login.user
+    user.isAuth = res.data.login.isAuth
+    user.data.name = res.data.login.user?.name
+    user.data.email = res.data.login.user?.email
+    user.data.role = res.data.login.user?.role
 
     formLogin.email = ''
     formLogin.password = ''
@@ -70,9 +71,9 @@ const formLoginSubmit = async () => {
     push({name: 'home'})
   }
 
-  if(!login.isAuth) {
-    error.path = login.error.path
-    error.value = login.error.value
+  if(!res?.data?.login?.isAuth) {
+    error.path = res?.data?.login?.error?.path
+    error.value = res?.data?.login?.error?.value
   }
 }
 

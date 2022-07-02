@@ -15,5 +15,12 @@ module.exports = {
     'import/extensions': ['error', { ts: 'never' }],
     'object-curly-newline': ['error', { multiline: true }],
   },
-  settings: { 'import/resolver': { node: { paths: ['src'], extensions: ['.ts'] } } },
+  settings: {
+    'import/resolver': {
+      node: {
+        paths: ['src'],
+        extensions: ['.ts'],
+      },
+    },
+  },
 };
