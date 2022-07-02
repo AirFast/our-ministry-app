@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import gql from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable'
+import { useQuery, UseQueryReturn } from '@vue/apollo-composable'
 import { useI18n } from 'vue-i18n'
 import { CogIcon } from '@heroicons/vue/solid'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { Query } from '~/graphqlTypes'
 
 const { t } = useI18n()
@@ -22,15 +22,16 @@ const SETTINGS_QUERY = gql`
   } 
 `
 
-const { result, loading, onResult } = useQuery<Query>(SETTINGS_QUERY)
+const { result, loading } = useQuery<Query>(SETTINGS_QUERY)
 
-onResult(() => {
-    if(result.value) {
-      result.value.settings?.map(setting => {
-        settings[setting?.name as keyof typeof settings] = setting?.value ?? ''
-      })
-    }
-  }
+watch(
+  () => result.value,
+  (result) => {
+    result?.settings?.map(setting => {
+      settings[setting?.name as keyof typeof settings] = setting?.value ?? ''
+    })
+  },
+  { immediate: true }
 )
 </script>
 
