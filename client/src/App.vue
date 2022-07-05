@@ -4,7 +4,7 @@ import { useQuery } from '@vue/apollo-composable'
 import { useUserStorage } from '~/composables/useUserStorage'
 import { useUserStore } from '~/store/user'
 import { AppHeader, AppMain, AppFooter } from '~/components'
-import { Query } from '~/graphqlTypes'
+import { Query } from '~/generated/GraphqlTypes'
 
 const userStorage = useUserStorage()
 const user = useUserStore()

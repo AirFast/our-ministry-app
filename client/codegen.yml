@@ -1,0 +1,10 @@
+overwrite: true
+schema: ${VITE_APP_SERVER_URL}
+# documents: "src/**/*.graphql"
+generates:
+  src/generated/GraphqlTypes.ts:
+    plugins:
+      - "typescript"
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"

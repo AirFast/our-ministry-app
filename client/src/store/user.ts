@@ -1,7 +1,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { useUserStorage } from '~/composables/useUserStorage'
-import { Maybe, User } from '~/graphqlTypes';
+import { Maybe, User } from '~/generated/GraphqlTypes';
 
 
 

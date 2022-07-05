@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { useUserStorage } from '~/composables/useUserStorage'
 import { useUserStore } from '~/store/user'
 import { VForm, VField } from '~/components'
-import { Maybe, Mutation, Error, MutationRegisterArgs } from '~/graphqlTypes'
+import { Maybe, Mutation, Error, MutationRegisterArgs } from '~/generated/GraphqlTypes'
 
 const { push } = useRouter()
 const { t } = useI18n()

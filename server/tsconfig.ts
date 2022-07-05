@@ -6,8 +6,13 @@ module.exports = {
     jsx: 'preserve',
     strict: true,
     esModuleInterop: true,
+    resolveJsonModule: true,
+    skipLibCheck: true,
     lib: ['es2018', 'esnext.asynciterable'],
     paths: { '~/*': ['./src/*'] },
+    types: [
+      'node',
+    ],
   },
   exclude: ['node_modules'],
 };
