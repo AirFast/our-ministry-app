@@ -25,7 +25,7 @@ const AUTH_QUERY = gql`
         message
       }
     }
-  } 
+  }
 `
 
 const { result, onResult } = useQuery<Query>(AUTH_QUERY)

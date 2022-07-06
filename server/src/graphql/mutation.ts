@@ -152,7 +152,7 @@ export const mutation = new GraphQLObjectType({
         value: { type: GraphQLString },
       },
       resolve(_, { name, value }, { req: { auth: { role } } }) {
-        if (role !== 'user') {
+        if (role !== 'admin') {
           throw new Error('Unauthenticated!');
         }
 

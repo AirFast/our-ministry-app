@@ -11,7 +11,7 @@ const { t } = useI18n()
 const settings = reactive({
   standStart: '',
   standEnd: '',
-  text: ''
+  message: ''
 })
 
 const SETTINGS_QUERY = gql`
@@ -50,7 +50,7 @@ watch(
     </section>
     <section class="py-8">
       <h2 class="mb-8">Повідомлення</h2>
-      <VTextArea v-model="settings.text" />
+      <VTextArea v-model="settings.message" />
     </section>
   </div>
   

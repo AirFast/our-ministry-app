@@ -37,6 +37,14 @@ p a {
   dark:bg-slate-500
 }
 
+.message h1 {
+  @apply font-bold tracking-wide mb-2
+}
+
+.message p {
+  /* @apply */
+}
+
 .error-fade-enter-active {
   @apply translate-y-2 opacity-0
 }

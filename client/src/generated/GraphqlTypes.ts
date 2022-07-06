@@ -73,6 +73,7 @@ export type Query = {
   auth?: Maybe<Auth>;
   role?: Maybe<Role>;
   roles?: Maybe<Array<Maybe<Role>>>;
+  setting?: Maybe<Setting>;
   settings?: Maybe<Array<Maybe<Setting>>>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
@@ -81,6 +82,11 @@ export type Query = {
 
 export type QueryRoleArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QuerySettingArgs = {
+  name: Scalars['String'];
 };
 
 

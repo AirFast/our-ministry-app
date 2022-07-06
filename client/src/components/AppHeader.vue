@@ -9,7 +9,7 @@ import { useUserStorage } from '~/composables/useUserStorage'
 import { useUserStore } from '~/store/user'
 import { UserIcon, CogIcon, LogoutIcon } from '@heroicons/vue/solid'
 import { VOptionButton } from '~/components'
-import { Mutation } from '~/graphqlTypes'
+import { Mutation } from '~/generated/GraphqlTypes'
 
 const { push } = useRouter()
 const { t } = useI18n()
@@ -64,7 +64,7 @@ const logout = async () => {
           <VOptionButton @click="isShowUserMenu = !isShowUserMenu">
             <UserIcon class="w-6 h-6 text-indigo-500 dark:text-indigo-200" />
           </VOptionButton>
-          <ul v-if="isShowUserMenu" ref="userMenuRef" class="absolute -right-2 bottom-100 mt-4 whitespace-nowrap rounded ring-1 ring-indigo-500/5 shadow-md bg-white dark:bg-slate-800">
+          <ul v-if="isShowUserMenu" ref="userMenuRef" class="absolute z-10 -right-2 bottom-100 mt-4 whitespace-nowrap rounded ring-1 ring-indigo-500/5 shadow-md bg-white dark:bg-slate-800">
             <li>
               <span class="block font-medium mx-2 p-3 border-b border-slate-100 dark:border-slate-700">
                 {{ user.data.name }}

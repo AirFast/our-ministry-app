@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { Maybe, Error } from '~/graphqlTypes'
+import { Maybe, Error } from '~/generated/GraphqlTypes'
 
 const { t } = useI18n()
 

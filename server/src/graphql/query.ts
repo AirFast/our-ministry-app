@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID } from 'graphql';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID, GraphQLString } from 'graphql';
 
 import { AuthType } from './types/AuthType';
 import { UserType } from './types/UserType';
@@ -57,6 +57,17 @@ export const query = new GraphQLObjectType({
       type: new GraphQLList(RoleType),
       resolve() {
         return Role.find({});
+      },
+    },
+    setting: {
+      type: SettingType,
+      args: { name: { type: new GraphQLNonNull(GraphQLString) } },
+      resolve(_, { name }, { req: { auth: { isAuth, role } } }) {
+        if (!isAuth || role === 'guest') {
+          throw new Error('Unauthenticated!');
+        }
+
+        return Setting.findOne({ name });
       },
     },
     settings: {
