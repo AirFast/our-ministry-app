@@ -5,6 +5,7 @@ import AppFooter from './AppFooter.vue'
 import VForm from './VForm.vue'
 import VField from './VField.vue'
 import VOptionButton from './VOptionButton.vue'
+import VTimeSelect from './VTimeSelect.vue'
 
 export {
   AppFooter,
@@ -13,5 +14,6 @@ export {
 
   VForm,
   VField,
-  VOptionButton
+  VOptionButton,
+  VTimeSelect
 }

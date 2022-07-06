@@ -9,7 +9,7 @@ p a {
 }
 
 .app-container {
-  @apply container px-6 mx-auto
+  @apply h-full flex flex-col container px-6 mx-auto
 }
 
 .router-link-active {
