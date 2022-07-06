@@ -1,25 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-  const props = defineProps({
-    start: { type: String, default: '0' },
-    end: { type: String, default: '23' },
-    modelValue: { type: String}
-  })
+const props = defineProps({
+  start: { type: String, default: '0' },
+  end: { type: String, default: '23' },
+  modelValue: { type: String}
+})
 
-  const items = computed<number[]>(() => {
-    let arr = []
+const items = computed<number[]>(() => {
+  let arr = []
 
-    for (let i = +props.start; i <= +props.end; i++) {
-      arr.push(i)
-    }
+  for (let i = +props.start; i <= +props.end; i++) {
+    arr.push(i)
+  }
 
-    return arr
-  })
-
-  defineEmits<{
-    (e: 'update:modelValue', modelValue: string): void
-  }>()
+  return arr
+})
 </script>
 
 <template>
